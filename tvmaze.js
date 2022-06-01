@@ -4,7 +4,6 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 
-
 /** Given a search term, search for tv shows that match that query.
  *
  *  Returns (promise) array of show objects: [show, show, ...].
@@ -12,33 +11,35 @@ const $searchForm = $("#searchForm");
  *    (if no image URL given by API, put in a default image URL)
  */
 
+//function that takes term , variable grabs the array of shows, use map to iterate
+//over the array of shows
+
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-
-  let getShows = await axios.get("https://api.tvmaze.com/search/shows",{params:{"q":term}})
-  console.log("getShows=",getShows)
-  let id = getShows.data[0].show.id
-  console.log("id=",id)
-  let name = getShows.data[0].show.name
-  console.log("name=",name)
-  let summary = getShows.data[0].show.summary
-  console.log("summary=",summary)
-  let image = getShows.data[0].show.image.original
-  console.log("image",image)
-
-  return [
-    {
-      "id": id,
-      "name": name,
-      "summary":summary,
-
-      "image":
-          image
+  const getShows = await axios.get("https://api.tvmaze.com/search/shows", {
+    params: { q: term },
+  });
+  const mappedShows = getShows.data.map(function (val) {
+    let imageVal;
+    if (val.show.image === null) {
+      imageVal =
+        "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
+    } else {
+      imageVal = val.show.image.original;
     }
-  ]
+    const showObj = {
+      id: val.show.id,
+      name: val.show.name,
+      summary: val.show.summary,
+      image: imageVal,
+    };
+
+    return showObj;
+  });
+
+  console.log(mappedShows, "mapped shows");
+  return mappedShows;
 }
-
-
 
 /** Given list of shows, create markup for each and to DOM */
 
@@ -47,11 +48,11 @@ function populateShows(shows) {
 
   for (let show of shows) {
     const $show = $(
-        `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+      `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
-              alt="Bletchly Circle San Francisco"
+              src="${show.image}"
+              alt="https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300"
               class="w-25 me-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
@@ -62,11 +63,12 @@ function populateShows(shows) {
            </div>
          </div>
        </div>
-      `);
+      `
+    );
 
-    $showsList.append($show);  }
+    $showsList.append($show);
+  }
 }
-
 
 /** Handle search form submission: get shows from API and display.
  *    Hide episodes area (that only gets shown if they ask for episodes)
@@ -74,7 +76,7 @@ function populateShows(shows) {
 
 async function searchForShowAndDisplay() {
   const term = $("#searchForm-term").val();
-  console.log("getshowsbyterm",getShowsByTerm(term))
+  console.log("getshowsbyterm", getShowsByTerm(term));
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
@@ -85,7 +87,6 @@ $searchForm.on("submit", async function (evt) {
   evt.preventDefault();
   await searchForShowAndDisplay();
 });
-
 
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
