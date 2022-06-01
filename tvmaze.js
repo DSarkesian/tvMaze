@@ -3,6 +3,7 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
+const DEFAULTNOIMAGE = "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -16,22 +17,18 @@ const $searchForm = $("#searchForm");
 
 async function getShowsByTerm(term) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
-  const getShows = await axios.get("https://api.tvmaze.com/search/shows", {
+  const showsFromAPI = await axios.get("https://api.tvmaze.com/search/shows", {
     params: { q: term },
   });
-  const mappedShows = getShows.data.map(function (val) {
-    let imageVal;
-    if (val.show.image === null) {
-      imageVal =
-        "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
-    } else {
-      imageVal = val.show.image.original;
-    }
+  const mappedShows = showsFromAPI.data.map(function (val) {
+    let imageURL;
+    imageURL = (val.show.image===null ? DEFAULTNOIMAGE : val.show.image.original )
+
     const showObj = {
       id: val.show.id,
       name: val.show.name,
       summary: val.show.summary,
-      image: imageVal,
+      image: imageURL,
     };
 
     return showObj;
@@ -52,7 +49,7 @@ function populateShows(shows) {
          <div class="media">
            <img
               src="${show.image}"
-              alt="https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300"
+              alt="image for ${show.name}"
               class="w-25 me-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
@@ -81,6 +78,7 @@ async function searchForShowAndDisplay() {
 
   $episodesArea.hide();
   populateShows(shows);
+
 }
 
 $searchForm.on("submit", async function (evt) {
@@ -92,7 +90,23 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+ async function getEpisodesOfShow(id) {
+
+  let showById = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`)
+  console.log("showbyid",  showById)
+  let mappedEpisodes = showById.data.map(function (val){
+    const episodeObj = {
+      "id" : val.id,
+      "name": val.name,
+      "season": val.season,
+      "number": val.number
+    }
+    return episodeObj
+
+  })
+  //let mapEpisodes = showById
+
+  }
 
 /** Write a clear docstring for this function... */
 
