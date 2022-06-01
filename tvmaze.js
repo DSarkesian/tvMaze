@@ -101,13 +101,31 @@ $searchForm.on("submit", async function (evt) {
       "season": val.season,
       "number": val.number
     }
-    return episodeObj
-
+    return episodeObj;
+    
   })
+  return mappedEpisodes;
   //let mapEpisodes = showById
 
   }
 
-/** Write a clear docstring for this function... */
+  /**on click button for episodes reveal and append */
+  $('#showsList').on('click', '.Show-getEpisodes',  getEpisodesAndDisplay)
+  
+  /** takes array of episodes info, updates dom episodesList */
+function populateEpisodes(episodes) { 
+  
+  for(let episode of episodes){
+    $('#episodesList').append(`<li>${episode}</li>`);
 
-// function populateEpisodes(episodes) { }
+  }
+//append to id #episodesList section in DOM
+//reveal id #episodesArea in DOM, currently hidden with display: none, change to block?
+}
+
+/**calling populateEpisodes getEpisodesOfShow functions */
+async function getEpisodesAndDisplay(evt){
+  //calling populateEpisodes and getEpisodesOfShow funcs
+  console.log(evt);
+  //let currentEpisodes = getEpisodesOfShow()
+ }
