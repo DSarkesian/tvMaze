@@ -102,7 +102,7 @@ $searchForm.on("submit", async function (evt) {
       "number": val.number
     }
     return episodeObj;
-    
+
   })
   return mappedEpisodes;
   //let mapEpisodes = showById
@@ -111,10 +111,10 @@ $searchForm.on("submit", async function (evt) {
 
   /**on click button for episodes reveal and append */
   $('#showsList').on('click', '.Show-getEpisodes',  getEpisodesAndDisplay)
-  
+
   /** takes array of episodes info, updates dom episodesList */
-function populateEpisodes(episodes) { 
-  
+function populateEpisodes(episodes) {
+
   for(let episode of episodes){
     $('#episodesList').append(`<li>${episode}</li>`);
 
@@ -125,7 +125,12 @@ function populateEpisodes(episodes) {
 
 /**calling populateEpisodes getEpisodesOfShow functions */
 async function getEpisodesAndDisplay(evt){
+  let evtId = $('.Show-getEpisodes').closest(".show").data(".data-show-id")
+
   //calling populateEpisodes and getEpisodesOfShow funcs
-  console.log(evt);
+
+  let episodeArr = await getEpisodesOfShow(evtId)
+  console.log("episodeArr=", episodeArr)
+  populateEpisodes(episodeArr)
   //let currentEpisodes = getEpisodesOfShow()
  }
