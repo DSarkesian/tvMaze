@@ -3,7 +3,8 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
-const DEFAULTNOIMAGE = "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
+const DEFAULTNOIMAGE =
+  "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
 
 /** Given a search term, search for tv shows that match that query.
  *
@@ -22,7 +23,8 @@ async function getShowsByTerm(term) {
   });
   const mappedShows = showsFromAPI.data.map(function (val) {
     let imageURL;
-    imageURL = (val.show.image===null ? DEFAULTNOIMAGE : val.show.image.original )
+    imageURL =
+      val.show.image === null ? DEFAULTNOIMAGE : val.show.image.original;
 
     const showObj = {
       id: val.show.id,
@@ -78,7 +80,6 @@ async function searchForShowAndDisplay() {
 
   $episodesArea.hide();
   populateShows(shows);
-
 }
 
 $searchForm.on("submit", async function (evt) {
@@ -90,47 +91,43 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
- async function getEpisodesOfShow(id) {
-
-  let showById = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`)
-  console.log("showbyid",  showById)
-  let mappedEpisodes = showById.data.map(function (val){
+async function getEpisodesOfShow(id) {
+  let showById = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  console.log("showbyid", showById);
+  let mappedEpisodes = showById.data.map(function (val) {
     const episodeObj = {
-      "id" : val.id,
-      "name": val.name,
-      "season": val.season,
-      "number": val.number
-    }
+      id: val.id,
+      name: val.name,
+      season: val.season,
+      number: val.number,
+    };
     return episodeObj;
-
-  })
+  });
   return mappedEpisodes;
   //let mapEpisodes = showById
+}
 
-  }
+/**on click button for episodes reveal and append */
+$("#showsList").on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
 
-  /**on click button for episodes reveal and append */
-  $('#showsList').on('click', '.Show-getEpisodes',  getEpisodesAndDisplay)
-
-  /** takes array of episodes info, updates dom episodesList */
+/** takes array of episodes info, updates dom episodesList */
 function populateEpisodes(episodes) {
-
-  for(let episode of episodes){
-    $('#episodesList').append(`<li>${episode}</li>`);
-
+  for (let episode of episodes) {
+    $("#episodesList").append(`<li>${episode}</li>`);
   }
-//append to id #episodesList section in DOM
-//reveal id #episodesArea in DOM, currently hidden with display: none, change to block?
+  //append to id #episodesList section in DOM
+  //reveal id #episodesArea in DOM, currently hidden with display: none, change to block?
 }
 
 /**calling populateEpisodes getEpisodesOfShow functions */
-async function getEpisodesAndDisplay(evt){
-  let evtId = $('.Show-getEpisodes').closest(".show").data(".data-show-id")
+async function getEpisodesAndDisplay(evt) {
+  let evtId = $(evt.target).closest(".Show").data("show-id");
 
   //calling populateEpisodes and getEpisodesOfShow funcs
 
-  let episodeArr = await getEpisodesOfShow(evtId)
-  console.log("episodeArr=", episodeArr)
-  populateEpisodes(episodeArr)
+  let episodeArr = await getEpisodesOfShow(evtId);
+  //console.log("episodeArr=", episodeArr);
+  populateEpisodes(episodeArr);
   //let currentEpisodes = getEpisodesOfShow()
- }
+  $('#episodesArea').style.display
+}
