@@ -112,8 +112,11 @@ $("#showsList").on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
 
 /** takes array of episodes info, updates dom episodesList */
 function populateEpisodes(episodes) {
+  $("#episodesList").empty()
   for (let episode of episodes) {
-    $("#episodesList").append(`<li>${episode}</li>`);
+    console.log(episode)
+    let episodeLi = (`<li> ${episode.name},season: ${episode.season}, episode: ${episode.number} </li>`)
+    $("#episodesList").append(episodeLi);
   }
   //append to id #episodesList section in DOM
   //reveal id #episodesArea in DOM, currently hidden with display: none, change to block?
@@ -129,5 +132,5 @@ async function getEpisodesAndDisplay(evt) {
   //console.log("episodeArr=", episodeArr);
   populateEpisodes(episodeArr);
   //let currentEpisodes = getEpisodesOfShow()
-  $('#episodesArea').style.display
+  $('#episodesArea').css("display","block")
 }
